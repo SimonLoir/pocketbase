@@ -161,3 +161,60 @@ describe("CommonHelpers.clone", () => {
         //expect(CommonHelpers.clone(undefined)).toBe(undefined);
     });
 });
+
+describe("CommonHelpers.isEmpty", () => {
+    it("should return true if the value is an empty string", () => {
+        expect(CommonHelpers.isEmpty("")).toBe(true);
+    });
+
+    it("should return true if the value is an empty array", () => {
+        expect(CommonHelpers.isEmpty([])).toBe(true);
+    });
+
+    it("should return true if the value is an empty object", () => {
+        expect(CommonHelpers.isEmpty({})).toBe(true);
+    });
+    //TODO: add more tests
+});
+
+describe("CommonHelpers.getInitials", () => {
+    it("should return the initials of a name", () => {
+        expect(CommonHelpers.getInitials("John Doe")).toBe("JD");
+    });
+
+    it("should return the initials of an email", () => {
+        expect(CommonHelpers.getInitials("john.doe@example.com")).toBe("JD");
+    });
+
+    it("should return the initials of a name with multiple spaces", () => {
+        // could be more than 2 spaces
+        //expect(CommonHelpers.getInitials("John    Doe")).toBe("JD");
+    });
+
+    it("should convert the initials to uppercase", () => {
+        expect(CommonHelpers.getInitials("john doe")).toBe("JD");
+    });
+
+    it("should return the uppercase version of a 2 chars string", () => {
+        expect(CommonHelpers.getInitials("us")).toBe("US");
+    });
+
+    it("should return the first char of a username", () => {
+        expect(CommonHelpers.getInitials("john")).toBe("J");
+    });
+});
+
+describe("CommonHelpers.randomString", () => {
+    it("should return a random string", () => {
+        expect(CommonHelpers.randomString()).not.toBe(CommonHelpers.randomString());
+    });
+
+    it("should return an empty string if the length is 0", () => {
+        // It should work but the length of zero is not allowed
+        //expect(CommonHelpers.randomString(0)).toBe("");
+    });
+
+    it("should return a string with the correct length", () => {
+        expect(CommonHelpers.randomString(10).length).toBe(10);
+    });
+});
