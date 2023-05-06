@@ -1474,7 +1474,7 @@ export default class CommonHelper {
      * ```
      *
      * @param  {String} idx
-     * @return {Object}
+     * @return {{unique: boolean}}
      */
     static parseIndex(idx) {
         const result = {

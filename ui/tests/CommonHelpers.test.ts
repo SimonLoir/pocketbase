@@ -218,3 +218,97 @@ describe("CommonHelpers.randomString", () => {
         expect(CommonHelpers.randomString(10).length).toBe(10);
     });
 });
+
+interface ParseIndexResult {
+    unique: boolean;
+    optional: boolean;
+    schemaName: string;
+    indexName: string;
+    tableName: string;
+    columns: { name: string; collate: string; sort: string }[];
+    where: "";
+}
+describe("CommonHelpers.parseIndex", () => {
+    it("should not return meaningful values if the index is an empty string", () => {
+        expect(CommonHelpers.parseIndex("")).toEqual<ParseIndexResult>({
+            unique: false,
+            optional: false,
+            schemaName: "",
+            indexName: "",
+            tableName: "",
+            columns: [],
+            where: "",
+        });
+    });
+
+    it("should return the correct index name when the request is in lowercase", () => {
+        expect(
+            (
+                CommonHelpers.parseIndex(
+                    "create index index_name on table_name (column_name)"
+                ) as ParseIndexResult
+            ).indexName
+        ).toBe("index_name");
+    });
+
+    it("should make abstraction of the spaces", () => {
+        expect(
+            CommonHelpers.parseIndex(
+                "CREATE     INDEX      schema.index_name      ON         table_name  (   column_name    )   "
+            )
+        ).toEqual<ParseIndexResult>({
+            unique: false,
+            optional: false,
+            schemaName: "schema",
+            indexName: "index_name",
+            tableName: "table_name",
+            columns: [{ name: "column_name", collate: "", sort: "" }],
+            where: "",
+        });
+    });
+
+    it("should return the correct table name", () => {
+        expect(
+            (
+                CommonHelpers.parseIndex(
+                    "CREATE INDEX index_name ON table_name (column_name)"
+                ) as ParseIndexResult
+            ).tableName
+        ).toBe("table_name");
+    });
+
+    it("should return an empty array if there is no column", () => {
+        expect(
+            (CommonHelpers.parseIndex("CREATE INDEX index_name ON table_name ()") as ParseIndexResult).columns
+        ).toEqual([]);
+    });
+
+    it("should return the correct column if there is only one column", () => {
+        expect(
+            (
+                CommonHelpers.parseIndex(
+                    "CREATE INDEX index_name ON table_name (column_name)"
+                ) as ParseIndexResult
+            ).columns
+        ).toEqual([
+            {
+                name: "column_name",
+                collate: "",
+                sort: "",
+            },
+        ]);
+    });
+
+    it("should return the correct columns 2 columns", () => {
+        expect(
+            (
+                CommonHelpers.parseIndex(
+                    "CREATE INDEX index_name ON table_name (column_name1, column_name2)"
+                ) as ParseIndexResult
+            ).columns
+        ).toEqual([
+            { name: "column_name1", collate: "", sort: "" },
+            { name: "column_name2", collate: "", sort: "" },
+        ]);
+    });
+});

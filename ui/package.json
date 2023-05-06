@@ -24,6 +24,8 @@
         "@codemirror/search": "^6.0.0",
         "@codemirror/state": "^6.0.0",
         "@codemirror/view": "^6.0.0",
+        "@stryker-mutator/core": "^6.4.2",
+        "@stryker-mutator/jest-runner": "^6.4.2",
         "@sveltejs/vite-plugin-svelte": "^2.0.2",
         "@tinymce/tinymce-svelte": "^1.0.0",
         "@types/jest": "^29.5.0",
