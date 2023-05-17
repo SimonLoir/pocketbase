@@ -9,3 +9,5 @@
 # stryker temp files
 .stryker-tmp
 
+coverage/
+reports/
