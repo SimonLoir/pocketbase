@@ -395,5 +395,100 @@ describe("CommonHelpers.parseIndex", () => {
 });
 
 describe("CommonHelpers.isInput", () => {
-    console.log(document.createElement("input"));
+    for (const item of [
+        {
+            type: "HTMLInputElement",
+            value: document.createElement("input"),
+            isInput: true,
+        },
+        {
+            type: "HTMLTextAreaElement",
+            value: document.createElement("textarea"),
+            isInput: true,
+        },
+        {
+            type: "HTMLSelectElement",
+            value: document.createElement("select"),
+            isInput: true,
+        },
+        {
+            type: "HTMLDivElement",
+            value: (() => {
+                const div = document.createElement("div");
+
+                // This should not be necessary but it seems that isContentEditable is not set to false by default in the mock of jsdom
+                // console.log(document.createElement("div").isContentEditable) works in the browser (chrome, moz and safari)
+
+                // @ts-ignore
+                div.isContentEditable = false;
+                return div;
+            })(),
+            isInput: false,
+        },
+        {
+            type: "HTMLDivElement with contenteditable",
+            value: (() => {
+                const div = document.createElement("div");
+                div.contentEditable = "true";
+                // @ts-ignore
+                div.isContentEditable = true;
+                return div;
+            })(),
+            isInput: true,
+        },
+
+        // isInput should not be provided an undefined value -> the type is Node and not Node | undefined
+    ]) {
+        it(`should return ${item.isInput} if the value is ${item.type}`, () => {
+            expect(CommonHelpers.isInput(item.value)).toEqual(item.isInput);
+        });
+    }
+});
+
+describe("CommonHelpers.hasNonEmptyProps", () => {
+    it("should return false if the object is empty", () => {
+        expect(CommonHelpers.hasNonEmptyProps({})).toBe(false);
+    });
+
+    it("should return false if the object has only empty strings", () => {
+        expect(CommonHelpers.hasNonEmptyProps({ a: "", b: "" })).toBe(false);
+    });
+
+    it("should return true if the object has at least one non empty string", () => {
+        expect(CommonHelpers.hasNonEmptyProps({ a: "", b: "b" })).toBe(true);
+    });
+});
+
+describe("CommonHelpers.inArray", () => {
+    it("should return true if the value is in the array", () => {
+        expect(CommonHelpers.inArray(["a", "b"], "a")).toBe(true);
+    });
+
+    it("should return false if the value is not in the array", () => {
+        expect(CommonHelpers.inArray(["a", "b"], "c")).toBe(false);
+    });
+
+    it("should return false if the array is empty", () => {
+        expect(CommonHelpers.inArray([], "a")).toBe(false);
+    });
+
+    it("should return false if the array is undefined", () => {
+        expect(CommonHelpers.inArray(undefined as any as [], "a")).toBe(false);
+    });
+
+    it("should return true if the array contains the value and has a length of 1", () => {
+        expect(CommonHelpers.inArray(["a"], "a")).toBe(true);
+    });
+
+    it("should return false if the array does not contain the value and has a length of 1", () => {
+        expect(CommonHelpers.inArray(["a"], "b")).toBe(false);
+    });
+
+    it("should return true if the array contains the value and has a length greater than 1", () => {
+        expect(CommonHelpers.inArray(["b", "a"], "a")).toBe(true);
+    });
+
+    it("should return false if the array does not contain the value and has a length greater than 1", () => {
+        expect(CommonHelpers.inArray(["b", "a"], "c")).toBe(false);
+    });
 });
