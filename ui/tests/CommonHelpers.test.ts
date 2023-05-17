@@ -160,20 +160,92 @@ describe("CommonHelpers.clone", () => {
         // This does not work as expected because JSON.parse(JSON.stringify(undefined)) throws an Error
         //expect(CommonHelpers.clone(undefined)).toBe(undefined);
     });
+
+    it("should return null if the value is null", () => {
+        expect(CommonHelpers.clone(null)).toBe(null);
+    });
+
+    it("should return the same value if the value is a string", () => {
+        expect(CommonHelpers.clone("test")).toBe("test");
+    });
+
+    it("should return the same value if the value is a number", () => {
+        expect(CommonHelpers.clone(123)).toBe(123);
+    });
 });
 
 describe("CommonHelpers.isEmpty", () => {
-    it("should return true if the value is an empty string", () => {
-        expect(CommonHelpers.isEmpty("")).toBe(true);
-    });
-
-    it("should return true if the value is an empty array", () => {
-        expect(CommonHelpers.isEmpty([])).toBe(true);
-    });
-
-    it("should return true if the value is an empty object", () => {
-        expect(CommonHelpers.isEmpty({})).toBe(true);
-    });
+    for (const item of [
+        {
+            type: "empty string",
+            value: "",
+            isEmpty: true,
+        },
+        {
+            type: "string",
+            value: "test",
+            isEmpty: false,
+        },
+        {
+            type: "empty array",
+            value: [],
+            isEmpty: true,
+        },
+        {
+            type: "array",
+            value: [1, 2, 3],
+            isEmpty: false,
+        },
+        {
+            type: "empty object",
+            value: {},
+            isEmpty: true,
+        },
+        {
+            type: "object",
+            value: { a: 1, b: 2, c: 3 },
+            isEmpty: false,
+        },
+        {
+            type: "null",
+            value: null,
+            isEmpty: true,
+        },
+        {
+            type: "zero uuid",
+            value: "00000000-0000-0000-0000-000000000000",
+            isEmpty: true,
+        },
+        {
+            type: "uuid",
+            value: "00000000-0000-0000-0000-000000000001",
+            isEmpty: false,
+        },
+        {
+            type: "zero datetime",
+            value: "0001-01-01 00:00:00.000Z",
+            isEmpty: true,
+        },
+        {
+            type: "datetime",
+            value: "2014-03-02 00:00:00.000Z",
+            isEmpty: false,
+        },
+        {
+            type: "zero date",
+            value: "0001-01-01",
+            isEmpty: true,
+        },
+        {
+            type: "date",
+            value: "1980-01-01",
+            isEmpty: false,
+        },
+    ]) {
+        it(`should return ${item.isEmpty} if the value is ${item.type}`, () => {
+            expect(CommonHelpers.isEmpty(item.value)).toBe(item.isEmpty);
+        });
+    }
     //TODO: add more tests
 });
 
@@ -216,6 +288,15 @@ describe("CommonHelpers.randomString", () => {
 
     it("should return a string with the correct length", () => {
         expect(CommonHelpers.randomString(10).length).toBe(10);
+    });
+
+    it("should return a similar object if an empty object is passed", () => {
+        expect(CommonHelpers.clone({})).toEqual({});
+    });
+
+    it("should not return the same object if an object is passed", () => {
+        const obj = { a: 1 };
+        expect(CommonHelpers.clone(obj)).not.toBe(obj);
     });
 });
 
@@ -311,4 +392,8 @@ describe("CommonHelpers.parseIndex", () => {
             { name: "column_name2", collate: "", sort: "" },
         ]);
     });
+});
+
+describe("CommonHelpers.isInput", () => {
+    console.log(document.createElement("input"));
 });
