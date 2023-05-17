@@ -71,7 +71,7 @@ describe("CommonHelpers.isObject", () => {
         },
     ]) {
         it(`should return ${item.isObject} if the value is a(n) ${item.type}`, () => {
-            expect(CommonHelpers.isObject("")).toBe(false);
+            expect(CommonHelpers.isObject(item.value)).toBe(item.isObject);
         });
     }
 });
