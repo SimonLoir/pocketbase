@@ -492,3 +492,194 @@ describe("CommonHelpers.inArray", () => {
         expect(CommonHelpers.inArray(["b", "a"], "c")).toBe(false);
     });
 });
+
+describe("CommonHelpers.toArray", () => {
+    it("should return an empty array if the value is undefined", () => {
+        expect(CommonHelpers.toArray(undefined as any)).toEqual([]);
+    });
+
+    it("should return a similar array if the value is an array", () => {
+        expect(CommonHelpers.toArray(["a", "b"])).toEqual(["a", "b"]);
+    });
+
+    it("should return an array with one element if the value is not an array", () => {
+        expect(CommonHelpers.toArray("a" as any)).toEqual(["a"]);
+    });
+
+    it("should return an array with an other reference", () => {
+        const a = ["a", "b"];
+        expect(CommonHelpers.toArray(a)).not.toBe(a);
+    });
+
+    it('should return an empty array if the value is ""', () => {
+        expect(CommonHelpers.toArray("" as any)).toEqual([]);
+    });
+
+    it('should return an array with one element if the value is "" and allowEmpty is true', () => {
+        expect(CommonHelpers.toArray("" as any, true)).toEqual([""]);
+    });
+});
+
+describe("CommonHelpers.removeByValue", () => {
+    it("should remove the value from the array", () => {
+        const array = ["a", "b", "c"];
+        CommonHelpers.removeByValue(array, "b");
+        expect(array).toEqual(["a", "c"]);
+    });
+
+    it("should not remove anything if the value is not in the array", () => {
+        const array = ["a", "b", "c"];
+        CommonHelpers.removeByValue(array, "d");
+        expect(array).toEqual(["a", "b", "c"]);
+    });
+
+    it("should not remove anything if the array is empty", () => {
+        const array: string[] = [];
+        CommonHelpers.removeByValue(array, "a");
+        expect(array).toEqual([]);
+    });
+
+    it("should still be undefined if the array is undefined", () => {
+        const array = undefined as any;
+        CommonHelpers.removeByValue(array, "a");
+        expect(array).toEqual(undefined);
+    });
+
+    it("should remove the value from the array if the array has a length of 1", () => {
+        const array = ["a"];
+        CommonHelpers.removeByValue(array, "a");
+        expect(array).toEqual([]);
+    });
+
+    it("should remove the value from the array if the array has a length of 2", () => {
+        const array = ["b", "a"];
+        CommonHelpers.removeByValue(array, "a");
+        expect(array).toEqual(["b"]);
+    });
+
+    it("should remove the value from the array if the array has a length of 2 and the value to remove is first", () => {
+        const array = ["a", "b"];
+        CommonHelpers.removeByValue(array, "a");
+        expect(array).toEqual(["b"]);
+    });
+
+    it("should only remove the last occurrence of the value in the array", () => {
+        const array = ["a", "b", "a"];
+        CommonHelpers.removeByValue(array, "a");
+        expect(array).toEqual(["a", "b"]);
+    });
+});
+
+describe("CommonHelpers.findByKey", () => {
+    it("should return null if the array is empty", () => {
+        expect(CommonHelpers.findByKey([], "a", "b")).toBeNull();
+    });
+
+    it("should return null if the array is undefined", () => {
+        expect(CommonHelpers.findByKey(undefined as any, "a", "b")).toBeNull();
+    });
+
+    it("should return null if the key is not in an object", () => {
+        expect(CommonHelpers.findByKey([{ a: "a" }], "b", "a")).toBeNull();
+    });
+
+    it("should return the object if the key is in an object", () => {
+        expect(CommonHelpers.findByKey([{ a: "a" }], "a", "a")).toEqual({ a: "a" });
+    });
+});
+
+describe("CommonHelpers.isFocusable", () => {
+    for (const item of [
+        {
+            type: "HTMLButtonElement",
+            expected: true,
+            value: document.createElement("button"),
+        },
+        {
+            type: "HTMLInputElement",
+            expected: true,
+            value: document.createElement("input"),
+        },
+        {
+            type: "HTMLAnchorElement",
+            expected: true,
+            value: document.createElement("a"),
+        },
+        {
+            type: "HTMLDetailsElement",
+            expected: true,
+            value: document.createElement("details"),
+        },
+        {
+            type: "HTMLDivElement with tabindex",
+            expected: true,
+            value: (() => {
+                const element = document.createElement("div");
+                element.setAttribute("tabindex", "0");
+                return element;
+            })(),
+        },
+        {
+            type: "HTMLDivElement without tabindex",
+            expected: false,
+            value: (() => {
+                const element = document.createElement("div");
+                return element;
+            })(),
+        },
+    ]) {
+        it(`should return ${item.expected} if the element is a ${item.type}`, () => {
+            expect(CommonHelpers.isFocusable(item.value)).toBe(item.expected);
+        });
+    }
+});
+
+describe("CommonHelpers.sentenize", () => {
+    it("should return an empty string if the value is undefined", () => {
+        expect(CommonHelpers.sentenize(undefined as any)).toBe("");
+    });
+
+    it("should return an empty string if the value is null", () => {
+        expect(CommonHelpers.sentenize(null as any)).toBe("");
+    });
+
+    it("should return an empty string if the value is an empty string", () => {
+        expect(CommonHelpers.sentenize("")).toBe("");
+    });
+
+    it("should return the uppercase version of the string if the string is a single letter", () => {
+        expect(CommonHelpers.sentenize("a", false)).toBe("A");
+    });
+
+    it("should add a dot if no argument is provided", () => {
+        expect(CommonHelpers.sentenize("a")).toBe("A.");
+    });
+
+    it('should trim the string if the string is " a "', () => {
+        expect(CommonHelpers.sentenize(" a ")).toBe("A.");
+    });
+
+    it("should only put the first letter in uppercase if its a 2 letters word", () => {
+        expect(CommonHelpers.sentenize("le", false)).toBe("Le");
+    });
+
+    it("should convert _ to spaces", () => {
+        expect(CommonHelpers.sentenize("a_b")).toBe("A b.");
+    });
+
+    it("should not add a dot if there is already a dot", () => {
+        expect(CommonHelpers.sentenize("a.")).toBe("A.");
+    });
+
+    it("should not add a dot if there is already a dot and a space", () => {
+        expect(CommonHelpers.sentenize("a. ")).toBe("A.");
+    });
+
+    it("should not add a dot if there is already a question mark", () => {
+        expect(CommonHelpers.sentenize("a?")).toBe("A?");
+    });
+
+    it("should not add a dot if there is already a exclamation point", () => {
+        expect(CommonHelpers.sentenize("a!")).toBe("A!");
+    });
+});
