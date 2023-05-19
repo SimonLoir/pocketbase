@@ -172,6 +172,22 @@ describe("CommonHelpers.clone", () => {
     it("should return the same value if the value is a number", () => {
         expect(CommonHelpers.clone(123)).toBe(123);
     });
+
+    it("should use structuredClone if structuredClone is available", () => {
+        const value = { a: 1, b: 2, c: 3 };
+
+        const structuredClone = jest.fn();
+
+        const old = globalThis.structuredClone;
+
+        globalThis.structuredClone = structuredClone;
+
+        CommonHelpers.clone(value);
+
+        expect(structuredClone).toBeCalledWith(value);
+
+        globalThis.structuredClone = old;
+    });
 });
 
 describe("CommonHelpers.isEmpty", () => {
