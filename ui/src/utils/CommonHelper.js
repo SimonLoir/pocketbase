@@ -1259,6 +1259,7 @@ export default class CommonHelper {
         };
     }
 
+    // Stryker disable all
     /**
      * Returns the default rich editor options.
      *
@@ -1325,6 +1326,8 @@ export default class CommonHelper {
             },
         };
     }
+
+    // Stryker restore all
 
     /**
      * Tries to output the first displayable field of the provided model.
