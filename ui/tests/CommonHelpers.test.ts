@@ -757,3 +757,85 @@ describe("CommonHelpers.slugify", () => {
         expect(CommonHelpers.slugify("testatest", "_", ["a"])).toBe("test_test");
     });
 });
+
+describe("CommonHelpers.filterRedactedProps", () => {
+    const redactedString = "******";
+
+    it("should return an empty object if the object is undefined", () => {
+        expect(CommonHelpers.filterRedactedProps(undefined as any)).toEqual({});
+    });
+
+    it("should return the same object if it is empty", () => {
+        expect(CommonHelpers.filterRedactedProps({})).toEqual({});
+    });
+
+    it("should return the same object if it does not contain a redacted property", () => {
+        expect(CommonHelpers.filterRedactedProps({ a: "a" })).toEqual({ a: "a" });
+    });
+
+    it("should return an object with a different reference", () => {
+        const object = { a: "a" };
+        expect(CommonHelpers.filterRedactedProps(object)).not.toBe(object);
+    });
+
+    it("should return an object without the redacted property", () => {
+        expect(CommonHelpers.filterRedactedProps({ a: redactedString, b: "b" })).toEqual({
+            b: "b",
+        });
+    });
+
+    it("should return an object without the redacted properties", () => {
+        expect(CommonHelpers.filterRedactedProps({ a: redactedString, b: "b", c: redactedString })).toEqual({
+            b: "b",
+        });
+    });
+
+    it('should not remove the property if it contains the redacted string but is not exclusively the redacted string ("a" + redactedString)', () => {
+        const obj = { a: "a" + redactedString, b: "b" };
+        expect(CommonHelpers.filterRedactedProps(obj)).toEqual(obj);
+    });
+
+    it("should replace the redacted string in nested objects", () => {
+        expect(CommonHelpers.filterRedactedProps({ a: { b: redactedString } })).toEqual({
+            a: {},
+        });
+    });
+
+    it("should not replace nulls with {}", () => {
+        expect(CommonHelpers.filterRedactedProps({ a: null })).toEqual({
+            a: null,
+        });
+    });
+
+    it("should not replace 0 with {}", () => {
+        expect(CommonHelpers.filterRedactedProps({ a: 0 })).toEqual({
+            a: 0,
+        });
+    });
+});
+
+describe.only("CommonHelpers.plainText", () => {
+    /*it("should return an empty string if the value is undefined", () => {
+        expect(CommonHelpers.plainText(undefined as any)).toBe("");
+    });
+
+    it("should return an empty string if the value is null", () => {
+        expect(CommonHelpers.plainText(null as any)).toBe("");
+    });
+
+    it("should return an empty string if the value is an empty string", () => {
+        expect(CommonHelpers.plainText("")).toBe("");
+    });
+
+    it("should return the same string if the value is a plain text", () => {
+        expect(CommonHelpers.plainText("test")).toBe("test");
+    });
+
+    it('should return "test" if the value is "<b>test</b>"', () => {
+        expect(CommonHelpers.plainText("<b>test</b>")).toBe("test");
+    });
+
+    it('should return "test test" if the value is "<b>test</b>  <i>test</i>"', () => {
+        expect(CommonHelpers.plainText("<b>test</b>  <i>test</i>")).toBe("test test");
+    });*/
+});
