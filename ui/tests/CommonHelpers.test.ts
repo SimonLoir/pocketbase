@@ -683,3 +683,61 @@ describe("CommonHelpers.sentenize", () => {
         expect(CommonHelpers.sentenize("a!")).toBe("A!");
     });
 });
+
+describe("CommonHelpers.slugify", () => {
+    for (const item of [
+        {
+            value: "test",
+            expected: "test",
+        },
+        {
+            value: "test test",
+            expected: "test_test",
+        },
+        {
+            value: "test      test",
+            expected: "test_test",
+        },
+        {
+            value: "test.test",
+            expected: "test_test",
+        },
+        {
+            value: "test=test",
+            expected: "test_test",
+        },
+        {
+            value: "test-test",
+            expected: "test_test",
+        },
+        {
+            // Test the "g" flag in the regex
+            value: "test-test-test",
+            expected: "test_test_test",
+        },
+        {
+            value: "test!test",
+            expected: "testtest",
+        },
+        {
+            value: "test&test",
+            expected: "testandtest",
+        },
+        {
+            value: "",
+            expected: "",
+        },
+    ]) {
+        it(`should return "${item.expected}" if the string is "${item.value}"`, () => {
+            expect(CommonHelpers.slugify(item.value)).toBe(item.expected);
+        });
+    }
+
+    it('should use - as a separator if the separator argument is "-"', () => {
+        expect(CommonHelpers.slugify("test test", "-")).toBe("test-test");
+    });
+
+    it("should convert a to _ if a is in the preserved characters", () => {
+        expect(CommonHelpers.slugify("testatest", "_", ["a"])).toBe("test_test");
+    });
+});
