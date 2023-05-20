@@ -262,7 +262,6 @@ describe("CommonHelpers.isEmpty", () => {
             expect(CommonHelpers.isEmpty(item.value)).toBe(item.isEmpty);
         });
     }
-    //TODO: add more tests
 });
 
 describe("CommonHelpers.getInitials", () => {
@@ -814,7 +813,7 @@ describe("CommonHelpers.filterRedactedProps", () => {
     });
 });
 
-describe.only("CommonHelpers.plainText", () => {
+describe("CommonHelpers.plainText", () => {
     /*it("should return an empty string if the value is undefined", () => {
         expect(CommonHelpers.plainText(undefined as any)).toBe("");
     });
