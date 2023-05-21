@@ -1543,7 +1543,7 @@ export default class CommonHelper {
     /**
      * Builds an index expression from parsed index parts (see parseIndex()).
      *
-     * @param  {Array} indexParts
+     * @param  {BuildIndexInput} indexParts
      * @return {String}
      */
     static buildIndex(indexParts) {

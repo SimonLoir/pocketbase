@@ -322,7 +322,7 @@ interface ParseIndexResult {
     indexName: string;
     tableName: string;
     columns: { name: string; collate: string; sort: string }[];
-    where: "";
+    where: string;
 }
 describe("CommonHelpers.parseIndex", () => {
     it("should not return meaningful values if the index is an empty string", () => {
@@ -409,6 +409,9 @@ describe("CommonHelpers.parseIndex", () => {
     });
 });
 
+type BuildIndexInput = Partial<ParseIndexResult>;
+describe("CommonHelpers.buildIndex", () => {});
+
 describe("CommonHelpers.isInput", () => {
     for (const item of [
         {
@@ -451,7 +454,11 @@ describe("CommonHelpers.isInput", () => {
             })(),
             isInput: true,
         },
-
+        /*{
+            type: "Text node",
+            value: document.createTextNode(""),
+            isInput: false,
+        },*/
         // isInput should not be provided an undefined value -> the type is Node and not Node | undefined
     ]) {
         it(`should return ${item.isInput} if the value is ${item.type}`, () => {
