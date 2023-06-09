@@ -906,3 +906,53 @@ describe("CommonHelpers.getNestedVal", () => {
         expect(CommonHelpers.getNestedVal({ a: ["a", "b"] }, "a.1")).toBe("b");
     });
 });
+
+describe("CommonHelpers.setByPath", () => {
+    //it('should be the same object if the path is empty ("")', () => {
+    //    const obj = { a: "a" };
+    //    CommonHelpers.setByPath(obj, "", "b");
+    //    expect(obj).toBe({ a: "a" });
+    //});
+
+    //it("should be the same object if the path is undefined", () => {
+    //    const obj = { a: "a" };
+    //    CommonHelpers.setByPath(obj, undefined as any, "b");
+    //    expect(obj).toBe({ a: "a" });
+    //});
+
+    it("should replace the value if the path exists", () => {
+        const obj = { a: "a" };
+        CommonHelpers.setByPath(obj, "a", "b");
+        expect(obj).toEqual({ a: "b" });
+    });
+
+    it("should replace the value if the path exists (nested)", () => {
+        const obj = { a: { b: { c: "c" } } };
+        CommonHelpers.setByPath(obj, "a.b.c", "d");
+        expect(obj).toEqual({ a: { b: { c: "d" } } });
+    });
+
+    it("should replace the value if the path exists (nested) and different delimiter", () => {
+        const obj = { a: { b: { c: "c" } } };
+        CommonHelpers.setByPath(obj, "a/b/c", "d", "/");
+        expect(obj).toEqual({ a: { b: { c: "d" } } });
+    });
+
+    it("should create the path if it does not exist", () => {
+        const obj = { a: "a" };
+        CommonHelpers.setByPath(obj, "b", "c");
+        expect(obj).toEqual({ a: "a", b: "c" });
+    });
+
+    it("should create the path if it does not exist (nested)", () => {
+        const obj = { a: "a" };
+        CommonHelpers.setByPath(obj, "b.c", "d");
+        expect(obj).toEqual({ a: "a", b: { c: "d" } });
+    });
+
+    it("should replace elements in arrays", () => {
+        const obj = { a: ["a", "b"] };
+        CommonHelpers.setByPath(obj, "a.1", "c");
+        expect(obj).toEqual({ a: ["a", "c"] });
+    });
+});
