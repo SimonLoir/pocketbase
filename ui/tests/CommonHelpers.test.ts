@@ -845,3 +845,64 @@ describe("CommonHelpers.plainText", () => {
         expect(CommonHelpers.plainText("<b>test</b>  <i>test</i>")).toBe("test test");
     });*/
 });
+
+describe("CommonHelpers.filterDuplicatesByKey", () => {
+    it("should return an empty array if the array is empty", () => {
+        expect(CommonHelpers.filterDuplicatesByKey([])).toEqual([]);
+    });
+
+    it("should return the same array if there is no duplicate", () => {
+        expect(CommonHelpers.filterDuplicatesByKey([{ id: 1 }, { id: 2 }])).toEqual([{ id: 1 }, { id: 2 }]);
+    });
+
+    it("should return the same array if there is no duplicate (with a key != 'id')", () => {
+        expect(CommonHelpers.filterDuplicatesByKey([{ a: 1 }, { a: 2 }], "a")).toEqual([{ a: 1 }, { a: 2 }]);
+    });
+
+    it("should remove the duplicates and keep the last one", () => {
+        expect(
+            CommonHelpers.filterDuplicatesByKey([
+                { id: 1, a: "b" },
+                { id: 1, a: "c" },
+            ])
+        ).toEqual([{ id: 1, a: "c" }]);
+    });
+
+    it("should return an empty array if the value is not an array", () => {
+        expect(CommonHelpers.filterDuplicatesByKey(undefined as any)).toEqual([]);
+    });
+});
+
+describe("CommonHelpers.getNestedVal", () => {
+    it("should return null if the path is empty", () => {
+        expect(CommonHelpers.getNestedVal({ a: "a" }, "")).toBe(null);
+    });
+
+    it("should return null if the path is undefined", () => {
+        expect(CommonHelpers.getNestedVal({ a: "a" }, undefined as any)).toBe(null);
+    });
+
+    it("should return null if the value is undefined", () => {
+        expect(CommonHelpers.getNestedVal(undefined as any, "a")).toBe(null);
+    });
+
+    it("should return the right value if the path exists", () => {
+        expect(CommonHelpers.getNestedVal({ a: "a" }, "a")).toBe("a");
+    });
+
+    it("should return the right value if the path exists (nested)", () => {
+        expect(CommonHelpers.getNestedVal({ a: { b: { c: "c" } } }, "a.b.c")).toBe("c");
+    });
+
+    it("should return the right value if the path exists (nested) and different delimiter", () => {
+        expect(CommonHelpers.getNestedVal({ a: { b: { c: "c" } } }, "a/b/c", null, "/")).toBe("c");
+    });
+
+    it("should return the default value if the path passes through a string", () => {
+        expect(CommonHelpers.getNestedVal({ a: "a" }, "a.b", "default")).toBe("default");
+    });
+
+    it("should work with arrays indexes", () => {
+        expect(CommonHelpers.getNestedVal({ a: ["a", "b"] }, "a.1")).toBe("b");
+    });
+});
