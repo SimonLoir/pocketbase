@@ -1265,6 +1265,7 @@ export default class CommonHelper {
      *
      * @return {Object}
      */
+    /* istanbul ignore next */
     static defaultEditorOptions() {
         return {
             branding: false,

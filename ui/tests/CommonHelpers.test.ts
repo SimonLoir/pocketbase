@@ -956,3 +956,29 @@ describe("CommonHelpers.setByPath", () => {
         expect(obj).toEqual({ a: ["a", "c"] });
     });
 });
+
+describe("CommonHelpers.truncate", () => {
+    it("should return an empty string if the value is undefined", () => {
+        expect(CommonHelpers.truncate(undefined as any)).toBe("");
+    });
+
+    it("should return an empty string if the value is an empty string", () => {
+        expect(CommonHelpers.truncate("")).toBe("");
+    });
+
+    it("should return the same string if the value is shorter than the max length", () => {
+        expect(CommonHelpers.truncate("test", 5)).toBe("test");
+    });
+
+    it("should return an empty string if the value is an empty string and the max length is 0", () => {
+        expect(CommonHelpers.truncate("", 0)).toBe("");
+    });
+
+    it('should add dots at the end of the string if the value is longer than the max length and no "end" parameter is provided', () => {
+        expect(CommonHelpers.truncate("test", 2)).toBe("te...");
+    });
+
+    it('should not add dots at the end of the string if the value is longer than the max length and "end" is set to false', () => {
+        expect(CommonHelpers.truncate("test", 2, false)).toBe("te");
+    });
+});
