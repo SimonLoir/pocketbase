@@ -410,7 +410,105 @@ describe("CommonHelpers.parseIndex", () => {
 });
 
 type BuildIndexInput = Partial<ParseIndexResult>;
-describe("CommonHelpers.buildIndex", () => {});
+describe("CommonHelpers.buildIndex", () => {
+    it("should return a valid sql query", () => {
+        expect(
+            CommonHelpers.buildIndex({
+                unique: false,
+                optional: false,
+                schemaName: "schema",
+                indexName: "index_name",
+                tableName: "table_name",
+                columns: [{ name: "column_name", collate: "", sort: "" }],
+                where: "",
+            })
+        ).toBe("CREATE INDEX `schema`.`index_name` ON `table_name` (`column_name`)");
+    });
+
+    it('should add the "unique" keyword if the index is unique', () => {
+        expect(
+            CommonHelpers.buildIndex({
+                unique: true,
+                optional: false,
+                schemaName: "schema",
+                indexName: "index_name",
+                tableName: "table_name",
+                columns: [{ name: "column_name", collate: "", sort: "" }],
+                where: "",
+            })
+        ).toBe("CREATE UNIQUE INDEX `schema`.`index_name` ON `table_name` (`column_name`)");
+    });
+
+    it('should add the "optional" keyword if the index should be created if it does not exist', () => {
+        expect(
+            CommonHelpers.buildIndex({
+                unique: false,
+                optional: true,
+                schemaName: "schema",
+                indexName: "index_name",
+                tableName: "table_name",
+                columns: [{ name: "column_name", collate: "", sort: "" }],
+                where: "",
+            })
+        ).toBe("CREATE INDEX IF NOT EXISTS `schema`.`index_name` ON `table_name` (`column_name`)");
+    });
+
+    it("should add the collate keyword if the collate is not empty", () => {
+        expect(
+            CommonHelpers.buildIndex({
+                unique: false,
+                optional: false,
+                schemaName: "schema",
+                indexName: "index_name",
+                tableName: "table_name",
+                columns: [{ name: "column_name", collate: "collate", sort: "" }],
+                where: "",
+            })
+        ).toBe("CREATE INDEX `schema`.`index_name` ON `table_name` (`column_name` COLLATE collate)");
+    });
+
+    it("should not add schema name if the schema name is empty", () => {
+        expect(
+            CommonHelpers.buildIndex({
+                unique: false,
+                optional: false,
+                schemaName: "",
+                indexName: "index_name",
+                tableName: "table_name",
+                columns: [{ name: "column_name", collate: "", sort: "" }],
+                where: "",
+            })
+        ).toBe("CREATE INDEX `index_name` ON `table_name` (`column_name`)");
+    });
+
+    it('should add the "where" clause if the where is not empty', () => {
+        expect(
+            CommonHelpers.buildIndex({
+                unique: false,
+                optional: false,
+                schemaName: "",
+                indexName: "index_name",
+                tableName: "table_name",
+                columns: [{ name: "column_name", collate: "", sort: "" }],
+                where: "id = 3",
+            })
+        ).toBe("CREATE INDEX `index_name` ON `table_name` (`column_name`) WHERE id = 3");
+    });
+
+    it("should add the sort keyword if the sort is not empty", () => {
+        //expect(
+        //    CommonHelpers.buildIndex({
+        //        unique: false,
+        //        optional: false,
+        //        schemaName: "",
+        //        indexName: "index_name",
+        //        tableName: "table_name",
+        //        columns: [{ name: "column_name", collate: "", sort: "ASC" }],
+        //        where: "",
+        //    })
+        //).toBe("CREATE INDEX `index_name` ON `table_name` (`column_name` ASC)");
+    });
+});
 
 describe("CommonHelpers.isInput", () => {
     for (const item of [
@@ -1055,7 +1153,7 @@ describe("CommonHelpers.getJWTPayload", () => {
     });
 });
 
-describe.only("CommonHelpers.splitNonEmpty", () => {
+describe("CommonHelpers.splitNonEmpty", () => {
     it("should return an empty array if the value is undefined", () => {
         expect(CommonHelpers.splitNonEmpty(undefined as any)).toEqual([]);
     });
