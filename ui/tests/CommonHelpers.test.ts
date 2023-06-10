@@ -982,3 +982,45 @@ describe("CommonHelpers.truncate", () => {
         expect(CommonHelpers.truncate("test", 2, false)).toBe("te");
     });
 });
+
+describe("CommonHelpers.extractColumnsFromQuery", () => {
+    it("should return an empty array if the query is undefined", () => {
+        expect(CommonHelpers.extractColumnsFromQuery(undefined as any)).toEqual([]);
+    });
+
+    it("should return an empty array if the query is an empty string", () => {
+        expect(CommonHelpers.extractColumnsFromQuery("")).toEqual([]);
+    });
+
+    it("should return an empty array if the query is not a valid sql select query", () => {
+        expect(CommonHelpers.extractColumnsFromQuery("test")).toEqual([]);
+    });
+
+    it('should return only one column if the query is "select a from b"', () => {
+        expect(CommonHelpers.extractColumnsFromQuery("select a from b")).toEqual(["a"]);
+    });
+
+    it('should return only one column if the query is "select a from b where c = 1"', () => {
+        expect(CommonHelpers.extractColumnsFromQuery("select a from b where c = 1")).toEqual(["a"]);
+    });
+
+    it("should return only one column if the query contains spaces", () => {
+        expect(CommonHelpers.extractColumnsFromQuery("   select    a    from       b")).toEqual(["a"]);
+    });
+
+    it('should return the right columns if the query is "select a, b from c"', () => {
+        expect(CommonHelpers.extractColumnsFromQuery("select a, b from c")).toEqual(["a", "b"]);
+    });
+
+    it('should return the aliases if the query is "select a as d, b as e from c"', () => {
+        expect(CommonHelpers.extractColumnsFromQuery("select a as d, b as e from c")).toEqual(["d", "e"]);
+    });
+
+    it('should ignore groups if the query is "select (a, b) from c"', () => {
+        expect(CommonHelpers.extractColumnsFromQuery("select (a, b), c from d")).toEqual(["c"]);
+    });
+
+    it('should remove backticks if the query is "select `a` from b"', () => {
+        expect(CommonHelpers.extractColumnsFromQuery("select `a` from b")).toEqual(["a"]);
+    });
+});

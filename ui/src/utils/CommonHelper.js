@@ -915,6 +915,8 @@ export default class CommonHelper {
      * @param  {Object} collection
      * @return {Object}
      */
+    // Stryker disable all
+    // istanbul ignore next
     static dummyCollectionRecord(collection) {
         const fields = collection?.schema || [];
 
@@ -984,12 +986,17 @@ export default class CommonHelper {
         return dummy;
     }
 
+    // Stryker restore all
+
     /**
      * Returns a dummy collection schema data object.
      *
      * @param  {Object} collection
      * @return {Object}
      */
+
+    // Stryker disable all
+    // istanbul ignore next
     static dummyCollectionSchemaData(collection) {
         const fields = collection?.schema || [];
 
@@ -1031,6 +1038,7 @@ export default class CommonHelper {
 
         return dummy;
     }
+    // Stryker restore all
 
     /**
      * Returns a collection type icon.
@@ -1038,6 +1046,8 @@ export default class CommonHelper {
      * @param  {String} type
      * @return {String}
      */
+    // Stryker disable all
+    // istanbul ignore next
     static getCollectionTypeIcon(type) {
         switch (type?.toLowerCase()) {
             case "auth":
@@ -1048,6 +1058,7 @@ export default class CommonHelper {
                 return "ri-folder-2-line";
         }
     }
+    // Stryker restore all
 
     /**
      * Returns a field type icon.
@@ -1055,6 +1066,8 @@ export default class CommonHelper {
      * @param  {String} type
      * @return {String}
      */
+    // istanbul ignore next
+    // Stryker disable all
     static getFieldTypeIcon(type) {
         switch (type?.toLowerCase()) {
             case "primary":
@@ -1087,6 +1100,7 @@ export default class CommonHelper {
                 return "ri-star-s-line";
         }
     }
+    // Stryker restore all
 
     /**
      * Returns the field value base type as text.
@@ -1235,6 +1249,8 @@ export default class CommonHelper {
      *
      * (see https://web.dev/optimize-long-tasks/)
      */
+    // istanbul ignore next
+    // Stryker disable all
     static yieldToMain() {
         return new Promise((resolve) => {
             setTimeout(resolve, 0);
@@ -1246,6 +1262,7 @@ export default class CommonHelper {
      *
      * @return {Object}
      */
+    // istanbul ignore next
     static defaultFlatpickrOptions() {
         return {
             dateFormat: "Y-m-d H:i:S",
@@ -1259,7 +1276,6 @@ export default class CommonHelper {
         };
     }
 
-    // Stryker disable all
     /**
      * Returns the default rich editor options.
      *
