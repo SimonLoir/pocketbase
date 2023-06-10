@@ -1024,3 +1024,33 @@ describe("CommonHelpers.extractColumnsFromQuery", () => {
         expect(CommonHelpers.extractColumnsFromQuery("select `a` from b")).toEqual(["a"]);
     });
 });
+
+describe("CommonHelpers.getJWTPayload", () => {
+    it('should return an empty object if the token is ""', () => {
+        const warn = jest.spyOn(console, "warn").mockImplementation(() => {});
+        expect(CommonHelpers.getJWTPayload("")).toEqual({});
+        expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('should return an empty object if the token is "test"', () => {
+        expect(CommonHelpers.getJWTPayload("test")).toEqual({});
+    });
+
+    it("should return the content of the JWT if the token is valid", () => {
+        expect(
+            CommonHelpers.getJWTPayload(
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoidGVzdCJ9.c3YTBJSewzdOv8ggND9PFQIrU9b1PK2vAA9oq3Cslgo"
+            )
+        ).toEqual({ data: "test" });
+    });
+
+    it("should return the content of the JWT if the token is valid", () => {
+        const warn = jest.spyOn(console, "warn").mockImplementation(() => {});
+        expect(
+            CommonHelpers.getJWTPayload(
+                "eyJhbGciOiJIUzI1NiIsInR5ckpXVCJ9.eyJkYXRhIjoidGdCJ9.c3YTBJSewzdOv8ggND9PFQIrU9b1PK2vAA9oq3Cslgo"
+            )
+        ).toEqual({});
+        expect(warn).toHaveBeenCalled();
+    });
+});
