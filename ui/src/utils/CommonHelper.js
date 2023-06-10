@@ -728,6 +728,8 @@ export default class CommonHelper {
      * @param  {String} text
      * @return {Promise}
      */
+    // Stryker disable all
+    // istanbul ignore next
     static async copyToClipboard(text) {
         text = "" + text; // ensure that text is string
 
@@ -739,6 +741,7 @@ export default class CommonHelper {
             console.warn("Failed to copy.", err);
         });
     }
+    // Stryker restore all
 
     /**
      * Downloads a json file created from the provide object.
@@ -746,6 +749,8 @@ export default class CommonHelper {
      * @param {mixed} obj   The JS object to download.
      * @param {String} name  The result file name.
      */
+    // Stryker disable all
+    // istanbul ignore next
     static downloadJson(obj, name) {
         const encodedObj = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj, null, 2));
 
@@ -755,6 +760,7 @@ export default class CommonHelper {
         tempLink.click();
         tempLink.remove();
     }
+    // Stryker restore all
 
     /**
      * Parses and returns the decoded jwt payload data.

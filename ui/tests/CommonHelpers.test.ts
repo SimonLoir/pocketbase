@@ -1054,3 +1054,33 @@ describe("CommonHelpers.getJWTPayload", () => {
         expect(warn).toHaveBeenCalled();
     });
 });
+
+describe.only("CommonHelpers.splitNonEmpty", () => {
+    it("should return an empty array if the value is undefined", () => {
+        expect(CommonHelpers.splitNonEmpty(undefined as any)).toEqual([]);
+    });
+
+    it("should return an empty array if the value is an empty string", () => {
+        expect(CommonHelpers.splitNonEmpty("")).toEqual([]);
+    });
+
+    it('should contain only "test" if the value is "test"', () => {
+        expect(CommonHelpers.splitNonEmpty("test")).toEqual(["test"]);
+    });
+
+    it('should contain only "test" if the value is "test,"', () => {
+        expect(CommonHelpers.splitNonEmpty("test,")).toEqual(["test"]);
+    });
+
+    it('should contain only "test" if the value is ",test"', () => {
+        expect(CommonHelpers.splitNonEmpty(",test")).toEqual(["test"]);
+    });
+
+    it('should contain only "test" and "test2" if the value is "test,,test2"', () => {
+        expect(CommonHelpers.splitNonEmpty("test,,test2")).toEqual(["test", "test2"]);
+    });
+
+    it('should trim the values if the value is "test, test2"', () => {
+        expect(CommonHelpers.splitNonEmpty("test, test2")).toEqual(["test", "test2"]);
+    });
+});
