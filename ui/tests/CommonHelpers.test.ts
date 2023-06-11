@@ -1689,3 +1689,175 @@ describe("CommonHelpers.getAllCollectionIdentifiers", () => {
         ]);
     });
 });
+
+describe("CommonHelpers.getFieldValueType", () => {
+    for (const item of [
+        {
+            value: {
+                type: "bool",
+            },
+            expected: "Boolean",
+            description: "the type is a bool",
+        },
+        {
+            value: {
+                type: "string",
+            },
+            expected: "String",
+            description: "the type is a string",
+        },
+        {
+            value: {
+                type: "number",
+            },
+            expected: "Number",
+            description: "the type is a number",
+        },
+        {
+            value: {
+                type: "file",
+            },
+            expected: "File",
+            description: "the type is a file",
+        },
+        {
+            value: {
+                type: "select",
+                options: {
+                    maxSelect: 1,
+                },
+            },
+            expected: "String",
+            description: "the type is a select",
+        },
+
+        {
+            value: {
+                type: "select",
+                options: {
+                    maxSelect: 10,
+                },
+            },
+            expected: "Array<String>",
+            description: "the type is a select that allows multiple values",
+        },
+
+        {
+            value: {
+                type: "relation",
+                options: {
+                    maxSelect: 1,
+                },
+            },
+            expected: "String",
+            description: "the type is a relation",
+        },
+
+        {
+            value: {
+                type: "relation",
+                options: {
+                    maxSelect: 10,
+                },
+            },
+            expected: "Array<String>",
+            description: "the type is a relation that allows multiple values",
+        },
+    ]) {
+        it(`should return ${item.expected} if ${item.description}`, () => {
+            expect(CommonHelpers.getFieldValueType(item.value as any)).toEqual(item.expected);
+        });
+    }
+});
+
+describe("CommonHelpers.displayValue", () => {
+    it("should return N/A if the value is undefined", () => {
+        expect(CommonHelpers.displayValue(undefined as any, [])).toEqual("N/A");
+    });
+
+    it('should return "undefined" if the missing value is set to "undefined"', () => {
+        expect(CommonHelpers.displayValue(undefined as any, [], "undefined")).toEqual("undefined");
+    });
+
+    for (const iterator of [
+        {
+            value: "test",
+            expected: "test",
+            description: "the value is a string",
+        },
+        {
+            value: 1,
+            expected: "1",
+            description: "the value is a number",
+        },
+        {
+            value: true,
+            expected: "True",
+            description: "the value is a boolean (true)",
+        },
+        {
+            value: false,
+            expected: "False",
+            description: "the value is a boolean (false)",
+        },
+        {
+            value: "a".repeat(200),
+            expected: "a".repeat(150) + "...",
+            description: "the value is a string that is too long",
+        },
+        {
+            value: null,
+            expected: "N/A",
+            description: "the value is null",
+        },
+    ]) {
+        it(`should return ${iterator.expected} if ${iterator.description}`, () => {
+            expect(
+                CommonHelpers.displayValue(
+                    {
+                        value: iterator.value,
+                    },
+                    ["value"]
+                )
+            ).toEqual(iterator.expected);
+        });
+    }
+
+    it("should ignore undefined fields", () => {
+        expect(
+            CommonHelpers.displayValue(
+                {
+                    value: undefined,
+                    value2: "test2",
+                },
+                ["value", "value2"]
+            )
+        ).toEqual("test2");
+    });
+
+    it("should display N/A in the list", () => {
+        expect(
+            CommonHelpers.displayValue(
+                {
+                    value: null,
+                    value2: "test2",
+                },
+                ["value", "value2"]
+            )
+        ).toEqual("N/A, test2");
+    });
+
+    for (const iterator of ["title", "name", "email", "username", "heading", "label", "key", "id"]) {
+        it(`should fallback to the ${iterator} if no field can be displayed`, () => {
+            expect(
+                CommonHelpers.displayValue(
+                    {
+                        value: undefined,
+                        [iterator]: "test",
+                    },
+                    ["value"]
+                )
+            ).toEqual("test");
+        });
+    }
+});
