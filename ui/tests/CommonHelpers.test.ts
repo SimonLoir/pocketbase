@@ -1,4 +1,5 @@
 import CommonHelpers from "../src/utils/CommonHelper";
+import { Collection } from "pocketbase";
 
 describe("CommonHelpers.isObject", () => {
     for (const item of [
@@ -1214,5 +1215,144 @@ describe("CommonHelpers.sortCollections", () => {
 
     it("should return an empty array if the collections are undefined", () => {
         expect(CommonHelpers.sortCollections(undefined as any)).toEqual([]);
+    });
+});
+
+describe("CommonHelpers.hasCollectionChanges", () => {
+    const baseCollection: Partial<Collection> = {
+        id: "np1wu6sn67l2ola",
+        name: "sections",
+        type: "base",
+        system: false,
+        schema: [
+            {
+                id: "qhbhmyiq",
+                name: "title",
+                type: "json",
+                system: false,
+                required: true,
+                options: {},
+            },
+        ],
+        indexes: ["CREATE INDEX `_np1wu6sn67l2ola_idx` ON `sections` (`created`)"],
+        listRule: "",
+        viewRule: null,
+        createRule: "",
+        updateRule: "",
+        deleteRule: null,
+        options: {},
+    };
+    let collection1: Partial<Collection> = baseCollection;
+    let collection2: Partial<Collection> = baseCollection;
+
+    beforeEach(() => {
+        collection1 = CommonHelpers.clone(baseCollection);
+        collection2 = CommonHelpers.clone(baseCollection);
+    });
+
+    it("should return false if the collections are the same", () => {
+        expect(CommonHelpers.hasCollectionChanges(collection1, collection2)).toBe(false);
+    });
+
+    it("should return true if the collections have different ids", () => {
+        collection2.id = "test";
+        expect(CommonHelpers.hasCollectionChanges(collection1, collection2)).toBe(true);
+    });
+
+    it("should return true if the collections have different names", () => {
+        collection2.name = "test";
+        expect(CommonHelpers.hasCollectionChanges(collection1, collection2)).toBe(true);
+    });
+
+    it("should return true if the collections have different types", () => {
+        collection2.type = "auth";
+        expect(CommonHelpers.hasCollectionChanges(collection1, collection2)).toBe(true);
+    });
+
+    it("should return true if a field name changed", () => {
+        collection2.schema![0].name = "test";
+        expect(CommonHelpers.hasCollectionChanges(collection1, collection2)).toBe(true);
+    });
+
+    it("should return true if a field was added", () => {
+        collection2.schema!.push({
+            id: "test",
+            name: "test",
+            type: "json",
+            system: false,
+            required: true,
+            options: {},
+        });
+        expect(CommonHelpers.hasCollectionChanges(collection1, collection2)).toBe(true);
+    });
+
+    it("should return false if a field was removed and withDeleteMissing = false", () => {
+        collection2.schema!.pop();
+        expect(CommonHelpers.hasCollectionChanges(collection1, collection2)).toBe(false);
+    });
+
+    it("should return true if a field was removed and withDeleteMissing = true", () => {
+        collection2.schema!.pop();
+        expect(CommonHelpers.hasCollectionChanges(collection1, collection2, true)).toBe(true);
+    });
+
+    it("should ignore added fields without id", () => {
+        collection2.schema!.push({
+            //@ts-ignore
+            id: undefined,
+            name: "test",
+            type: "json",
+            system: false,
+            required: true,
+            options: {},
+        });
+        expect(CommonHelpers.hasCollectionChanges(collection1, collection2)).toBe(false);
+    });
+
+    it("should ignore removed fields without id", () => {
+        collection1.schema!.push({
+            //@ts-ignore
+            id: undefined,
+            name: "test",
+            type: "json",
+            system: false,
+            required: true,
+            options: {},
+        });
+        expect(CommonHelpers.hasCollectionChanges(collection1, collection2)).toBe(false);
+    });
+});
+
+describe("CommonHelpers.replaceIndexTableName", () => {
+    it("should replace the table name in the index", () => {
+        expect(
+            CommonHelpers.replaceIndexTableName("CREATE INDEX `idx` ON `sections` (`created`)", "test")
+        ).toBe("CREATE INDEX `idx` ON `test` (`created`)");
+    });
+
+    it("should not produce a valid index if the index is not valid", () => {
+        expect(
+            CommonHelpers.replaceIndexTableName("CREATE INDEX `idx` ON `sections` (`created`", "test")
+        ).toContain("()"); // The columns are missing
+    });
+});
+
+describe("CommonHelpers.replaceIndexColumn", () => {
+    it("should replace the column name in the index", () => {
+        expect(
+            CommonHelpers.replaceIndexColumn("CREATE INDEX `idx` ON `sections` (`from`)", "from", "to")
+        ).toBe("CREATE INDEX `idx` ON `sections` (`to`)");
+    });
+
+    it("should return the same index if the column name is the same", () => {
+        expect(
+            CommonHelpers.replaceIndexColumn("CREATE INDEX `idx` ON `sections` (`from`)", "from", "from")
+        ).toBe("CREATE INDEX `idx` ON `sections` (`from`)");
+    });
+
+    it("should return the same index if the column name is not found", () => {
+        expect(
+            CommonHelpers.replaceIndexColumn("CREATE INDEX `idx` ON `sections` (`from`)", "test", "to")
+        ).toBe("CREATE INDEX `idx` ON `sections` (`from`)");
     });
 });
