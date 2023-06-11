@@ -1379,3 +1379,24 @@ describe("CommonHelpers.joinNonEmpty", () => {
         expect(CommonHelpers.joinNonEmpty(["test ", " test2 "] as any)).toBe("test, test2");
     });
 });
+
+describe("CommonHelpers.truncateObject", () => {
+    it("should return an empty object if the object is an empty object", () => {
+        expect(CommonHelpers.truncateObject({})).toEqual({});
+    });
+
+    it("should return the same object if the object does not have any string greater than 150 characters", () => {
+        const obj = { a: "test", b: "test2" };
+        expect(CommonHelpers.truncateObject(obj)).toEqual(obj);
+    });
+
+    it("should limit the string to 150 characters if the object has a string greater than 150 characters", () => {
+        const obj = { a: "test", b: "a".repeat(200) };
+        expect(CommonHelpers.truncateObject(obj)).toEqual({ a: "test", b: "a".repeat(150) + "..." });
+    });
+
+    it('should leave values != "string" untouched', () => {
+        const obj = { a: "test", b: 1 };
+        expect(CommonHelpers.truncateObject(obj)).toEqual(obj);
+    });
+});
