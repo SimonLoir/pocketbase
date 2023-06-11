@@ -1479,3 +1479,33 @@ describe("CommonHelpers.deleteByPath", () => {
         expect(obj).toEqual({});
     });
 });
+
+describe.only("CommonHelpers.groupByKey", () => {
+    it("should return an empty object if the array is empty", () => {
+        expect(CommonHelpers.groupByKey([], "a")).toEqual({});
+    });
+
+    it("should group by id if the key is not provided", () => {
+        expect(CommonHelpers.groupByKey([{ id: 1 }], "id")).toEqual({ 1: [{ id: 1 }] });
+    });
+
+    it("should group by key if a key is provided", () => {
+        const groups = CommonHelpers.groupByKey(
+            [
+                { a: 1, b: 1 },
+                { a: 1, b: 2 },
+                { a: 2, b: 3 },
+            ],
+            "a"
+        ) as any;
+        expect(groups[1]).toHaveLength(2);
+        expect(groups[2]).toHaveLength(1);
+        expect(groups[1][0].b).toBe(1);
+        expect(groups[1][1].b).toBe(2);
+        expect(groups[2][0].b).toBe(3);
+    });
+
+    it("should return an empty object if the array is undefined", () => {
+        expect(CommonHelpers.groupByKey(undefined as any, "a")).toEqual({});
+    });
+});
