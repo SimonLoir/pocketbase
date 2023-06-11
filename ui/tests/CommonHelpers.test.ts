@@ -1538,3 +1538,42 @@ describe("CommonHelpers.removeByKey", () => {
         expect(arr).toEqual([{ a: 1, b: 2 }]);
     });
 });
+
+describe("CommonHelpers.pushOrReplaceByKey", () => {
+    it("should push the item if the key is not found", () => {
+        const arr: any[] = [];
+        CommonHelpers.pushOrReplaceByKey(arr, { a: 1 }, "a");
+        expect(arr).toEqual([{ a: 1 }]);
+    });
+
+    it("should replace the item if the key is found", () => {
+        const arr = [{ a: 1 }];
+        CommonHelpers.pushOrReplaceByKey(arr, { a: 1, b: 1 }, "a");
+        expect(arr).toEqual([{ a: 1, b: 1 }]);
+    });
+
+    // The specification should specify that the array us traversed in reverse order
+    it("should only replace the last occurence if the key is found multiple times", () => {
+        const arr = [
+            { a: 1, b: 1 },
+            { a: 1, b: 2 },
+        ];
+        CommonHelpers.pushOrReplaceByKey(arr, { a: 1, b: 3 }, "a");
+        expect(arr).toEqual([
+            { a: 1, b: 1 },
+            { a: 1, b: 3 },
+        ]);
+    });
+
+    it("should push the item if the key is found but the value is different", () => {
+        const arr = [{ a: 1 }];
+        CommonHelpers.pushOrReplaceByKey(arr, { a: 2 }, "a");
+        expect(arr).toEqual([{ a: 1 }, { a: 2 }]);
+    });
+
+    it('should use the "id" property if the key is not provided', () => {
+        const arr = [{ id: 1 }];
+        CommonHelpers.pushOrReplaceByKey(arr, { id: 1, b: 1 });
+        expect(arr).toEqual([{ id: 1, b: 1 }]);
+    });
+});
