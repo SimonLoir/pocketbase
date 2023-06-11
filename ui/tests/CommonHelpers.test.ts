@@ -1401,7 +1401,7 @@ describe("CommonHelpers.truncateObject", () => {
     });
 });
 
-describe.only("CommonHelpers.trimQuotedValue", () => {
+describe("CommonHelpers.trimQuotedValue", () => {
     it("should return a number if the value is a number", () => {
         expect(CommonHelpers.trimQuotedValue(1)).toBe(1);
     });
@@ -1433,5 +1433,49 @@ describe.only("CommonHelpers.trimQuotedValue", () => {
     it("should not remove the quotes in an array of strings", () => {
         const a = ["'", "test", "'"];
         expect(CommonHelpers.trimQuotedValue(a)).toEqual(a);
+    });
+});
+
+describe("CommonHelpers.deleteByPath", () => {
+    it("should not modify the object if the path is empty", () => {
+        const obj = { a: "test" };
+        CommonHelpers.deleteByPath(obj, "");
+        expect(obj).toEqual({ a: "test" });
+    });
+
+    it("should not modify the object if the path is not found", () => {
+        const obj = { a: "test" };
+        CommonHelpers.deleteByPath(obj, "b");
+        expect(obj).toEqual({ a: "test" });
+    });
+
+    it("should delete the property if the path is found", () => {
+        const obj = { a: "test" };
+        CommonHelpers.deleteByPath(obj, "a");
+        expect(obj).toEqual({});
+    });
+
+    it("should delete the property if the path is found (nested) - properties with empty objects should be removed", () => {
+        const obj = { a: { b: "test" } };
+        CommonHelpers.deleteByPath(obj, "a.b");
+        expect(obj).toEqual({});
+    });
+
+    it("should delete empty object even if the path is not found", () => {
+        const obj = { a: {} };
+        CommonHelpers.deleteByPath(obj, "a.b");
+        expect(obj).toEqual({});
+    });
+
+    it("should delete properties in object nested in arrays", () => {
+        const obj = { a: [{ b: "test" }] };
+        CommonHelpers.deleteByPath(obj, "a.0.b");
+        expect(obj).toEqual({});
+    });
+
+    it("should remove the property if the property is not an object or an array and a path goes through it", () => {
+        const obj = { a: "test" };
+        CommonHelpers.deleteByPath(obj, "a.b.c");
+        expect(obj).toEqual({});
     });
 });
