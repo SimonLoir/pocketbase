@@ -1356,3 +1356,26 @@ describe("CommonHelpers.replaceIndexColumn", () => {
         ).toBe("CREATE INDEX `idx` ON `sections` (`from`)");
     });
 });
+
+describe("CommonHelpers.joinNonEmpty", () => {
+    // Wrong type in the spec
+    it("should return an empty string if the array is empty", () => {
+        expect(CommonHelpers.joinNonEmpty([] as any)).toBe("");
+    });
+
+    it("should return the first element if the array has one element", () => {
+        expect(CommonHelpers.joinNonEmpty(["test"] as any)).toBe("test");
+    });
+
+    it("should ignore elements that are not string", () => {
+        expect(CommonHelpers.joinNonEmpty(["test", 1] as any)).toBe("test");
+    });
+
+    it("should ignore empty strings", () => {
+        expect(CommonHelpers.joinNonEmpty(["test", "", "test2"] as any)).toBe("test, test2");
+    });
+
+    it("should trim the elements", () => {
+        expect(CommonHelpers.joinNonEmpty(["test ", " test2 "] as any)).toBe("test, test2");
+    });
+});

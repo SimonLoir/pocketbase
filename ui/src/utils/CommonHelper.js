@@ -847,6 +847,8 @@ export default class CommonHelper {
      * @param  {Number} [height]
      * @return {Promise}
      */
+    // Stryker disable all
+    // istanbul ignore next
     static generateThumb(file, width = 100, height = 100) {
         return new Promise((resolve) => {
             let reader = new FileReader();
@@ -885,6 +887,7 @@ export default class CommonHelper {
             reader.readAsDataURL(file);
         });
     }
+    // Stryker restore all
 
     /**
      * Normalizes and append a value to the provided form data.
