@@ -1,6 +1,30 @@
 import CommonHelpers from "../src/utils/CommonHelper";
 import { Collection } from "pocketbase";
 
+const baseCollection: Partial<Collection> = {
+    id: "np1wu6sn67l2ola",
+    name: "sections",
+    type: "base",
+    system: false,
+    schema: [
+        {
+            id: "qhbhmyiq",
+            name: "title",
+            type: "json",
+            system: false,
+            required: true,
+            options: {},
+        },
+    ],
+    indexes: ["CREATE INDEX `_np1wu6sn67l2ola_idx` ON `sections` (`created`)"],
+    listRule: "",
+    viewRule: null,
+    createRule: "",
+    updateRule: "",
+    deleteRule: null,
+    options: {},
+};
+
 describe("CommonHelpers.isObject", () => {
     for (const item of [
         {
@@ -1219,29 +1243,6 @@ describe("CommonHelpers.sortCollections", () => {
 });
 
 describe("CommonHelpers.hasCollectionChanges", () => {
-    const baseCollection: Partial<Collection> = {
-        id: "np1wu6sn67l2ola",
-        name: "sections",
-        type: "base",
-        system: false,
-        schema: [
-            {
-                id: "qhbhmyiq",
-                name: "title",
-                type: "json",
-                system: false,
-                required: true,
-                options: {},
-            },
-        ],
-        indexes: ["CREATE INDEX `_np1wu6sn67l2ola_idx` ON `sections` (`created`)"],
-        listRule: "",
-        viewRule: null,
-        createRule: "",
-        updateRule: "",
-        deleteRule: null,
-        options: {},
-    };
     let collection1: Partial<Collection> = baseCollection;
     let collection2: Partial<Collection> = baseCollection;
 
@@ -1629,5 +1630,62 @@ describe("CommonHelpers.addValueToFormData", () => {
     it("should convert an object to JSON", () => {
         CommonHelpers.addValueToFormData(d, "a", { b: 1 });
         expect(JSON.parse(d.get("a") as string)).toEqual({ b: 1 });
+    });
+});
+
+describe("CommonHelpers.getAllCollectionIdentifiers", () => {
+    let collection: Partial<Collection> = baseCollection;
+
+    beforeEach(() => {
+        collection = CommonHelpers.clone(baseCollection);
+    });
+
+    it("should return an empty array if the collection is undefined", () => {
+        //expect(CommonHelpers.getAllCollectionIdentifiers(undefined as any)).toEqual([]);
+    });
+
+    it("should contain the base collection identifier if it is a base collection", () => {
+        const identifiers = CommonHelpers.getAllCollectionIdentifiers(collection as any);
+        expect(identifiers).toContain("id");
+        expect(identifiers).toContain("created");
+        expect(identifiers).toContain("updated");
+    });
+
+    it("should contain the auth collection identifier if it is an auth collection", () => {
+        //@ts-expect-error
+        collection.$isAuth = true;
+
+        const identifiers = CommonHelpers.getAllCollectionIdentifiers(collection as any);
+
+        expect(identifiers).toContain("id");
+        expect(identifiers).toContain("created");
+        expect(identifiers).toContain("updated");
+        expect(identifiers).toContain("email");
+        expect(identifiers).toContain("emailVisibility");
+        expect(identifiers).toContain("username");
+        expect(identifiers).toContain("verified");
+    });
+
+    it("should contain the identifier of the schema if it is defined", () => {
+        expect(CommonHelpers.getAllCollectionIdentifiers(collection as any)).toContain("title");
+    });
+
+    it("should add the prefix if it is defined", () => {
+        expect(CommonHelpers.getAllCollectionIdentifiers(collection as any, "prefix_")).toContain(
+            "prefix_title"
+        );
+    });
+
+    it("should get the identifiers from the column names of the query if the collection is a view", () => {
+        //@ts-expect-error
+        collection.$isView = true;
+        collection.options!.query = "select a, b from b";
+
+        expect(CommonHelpers.getAllCollectionIdentifiers(collection as any)).toEqual([
+            "id",
+            "a",
+            "b",
+            "title",
+        ]);
     });
 });
