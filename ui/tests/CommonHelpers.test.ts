@@ -1480,7 +1480,7 @@ describe("CommonHelpers.deleteByPath", () => {
     });
 });
 
-describe.only("CommonHelpers.groupByKey", () => {
+describe("CommonHelpers.groupByKey", () => {
     it("should return an empty object if the array is empty", () => {
         expect(CommonHelpers.groupByKey([], "a")).toEqual({});
     });
@@ -1507,5 +1507,34 @@ describe.only("CommonHelpers.groupByKey", () => {
 
     it("should return an empty object if the array is undefined", () => {
         expect(CommonHelpers.groupByKey(undefined as any, "a")).toEqual({});
+    });
+});
+
+describe("CommonHelpers.removeByKey", () => {
+    it("should leave the array unchanged if it is empty", () => {
+        const arr: any[] = [];
+        CommonHelpers.removeByKey(arr, "a", 1);
+        expect(arr).toEqual([]);
+    });
+
+    it("should leave the array unchanged if the key is not found", () => {
+        const arr = [{ a: 1 }];
+        CommonHelpers.removeByKey(arr, "b", 1);
+        expect(arr).toEqual([{ a: 1 }]);
+    });
+
+    it("should remove the item if the key is found", () => {
+        const arr = [{ a: 1 }];
+        CommonHelpers.removeByKey(arr, "a", 1);
+        expect(arr).toEqual([]);
+    });
+
+    it("should only remove the first occurence if the key is found multiple times", () => {
+        const arr = [
+            { a: 1, b: 1 },
+            { a: 1, b: 2 },
+        ];
+        CommonHelpers.removeByKey(arr, "a", 1);
+        expect(arr).toEqual([{ a: 1, b: 2 }]);
     });
 });
