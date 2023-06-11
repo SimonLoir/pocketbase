@@ -1861,3 +1861,48 @@ describe("CommonHelpers.displayValue", () => {
         });
     }
 });
+
+const date = new Date("2023-06-11T20:00:00.000Z");
+describe("CommonHelpers.formatToUTCDate", () => {
+    it("should return the date in UTC format", () => {
+        expect(CommonHelpers.formatToUTCDate(date)).toEqual("2023-06-11 20:00:00");
+    });
+});
+
+describe("CommonHelpers.formatToLocalDate", () => {
+    it("should return the date in locale time", () => {
+        expect(CommonHelpers.formatToLocalDate(date)).toEqual("2023-06-11 22:00:00");
+    });
+});
+
+describe("CommonHelpers.getDateTime", () => {
+    it("should return the datetime if a Date is provided", () => {
+        expect(CommonHelpers.getDateTime(date).toUTC().toFormat("yyyy-MM-dd HH:mm:ss")).toEqual(
+            "2023-06-11 20:00:00"
+        );
+    });
+
+    it("should return the datetime if a date is provided in format yyyy-MM-dd HH:mm:ss", () => {
+        expect(
+            CommonHelpers.getDateTime("2023-06-11 20:00:00").toUTC().toFormat("yyyy-MM-dd HH:mm:ss")
+        ).toEqual("2023-06-11 20:00:00");
+    });
+
+    it("should return the datetime if a date is provided in format yyyy-MM-dd HH:mm:ss.SSS", () => {
+        expect(
+            CommonHelpers.getDateTime("2023-06-11 20:00:00.000").toUTC().toFormat("yyyy-MM-dd HH:mm:ss")
+        ).toEqual("2023-06-11 20:00:00");
+    });
+
+    it("should return the datetime if a date is provided in format yyyy-MM-dd HH:mm:ssZ", () => {
+        expect(
+            CommonHelpers.getDateTime("2023-06-11 20:00:00+0").toUTC().toFormat("yyyy-MM-dd HH:mm:ss")
+        ).toEqual("2023-06-11 20:00:00");
+    });
+
+    it("should return the datetime if a date is provided in format yyyy-MM-dd HH:mm:ss.SSSZ", () => {
+        expect(
+            CommonHelpers.getDateTime("2023-06-11 20:00:00.000+0").toUTC().toFormat("yyyy-MM-dd HH:mm:ss")
+        ).toEqual("2023-06-11 20:00:00");
+    });
+});
