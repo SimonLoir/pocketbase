@@ -4,3 +4,5 @@ const dom = new JSDOM();
 globalThis.document = dom.window.document;
 globalThis.window = dom.window as any;
 globalThis.DOMParser = DOMParser as any;
+globalThis.FormData = dom.window.FormData;
+globalThis.File = dom.window.File;

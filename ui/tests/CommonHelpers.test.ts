@@ -1577,3 +1577,57 @@ describe("CommonHelpers.pushOrReplaceByKey", () => {
         expect(arr).toEqual([{ id: 1, b: 1 }]);
     });
 });
+
+describe("CommonHelpers.addValueToFormData", () => {
+    let d: FormData;
+    beforeEach(() => {
+        d = new FormData();
+    });
+
+    it("should add a string value", () => {
+        CommonHelpers.addValueToFormData(d, "a", "b");
+        expect(d.get("a")).toBe("b");
+    });
+
+    it("should not add an undefined value", () => {
+        CommonHelpers.addValueToFormData(d, "a", undefined);
+        expect(d.has("a")).toBe(false);
+    });
+
+    it("should add null as an empty string", () => {
+        CommonHelpers.addValueToFormData(d, "a", null);
+        expect(d.get("a")).toBe("");
+    });
+
+    it("should convert a number to a string", () => {
+        CommonHelpers.addValueToFormData(d, "a", 1);
+        expect(d.get("a")).toBe("1");
+    });
+
+    it('should add a boolean as "true"', () => {
+        CommonHelpers.addValueToFormData(d, "a", true);
+        expect(d.get("a")).toBe("true");
+    });
+
+    it("should convert a date to an ISO string", () => {
+        const date = new Date();
+        CommonHelpers.addValueToFormData(d, "a", date);
+        expect(d.get("a")).toBe(date.toISOString());
+    });
+
+    it("should add Files as is", () => {
+        const file = new File([], "test");
+        CommonHelpers.addValueToFormData(d, "a", file);
+        expect(d.get("a")).toBe(file);
+    });
+
+    it("should encode all elements of an array individually", () => {
+        CommonHelpers.addValueToFormData(d, "a", ["b", "c"]);
+        expect(d.getAll("a")).toEqual(["b", "c"]);
+    });
+
+    it("should convert an object to JSON", () => {
+        CommonHelpers.addValueToFormData(d, "a", { b: 1 });
+        expect(JSON.parse(d.get("a") as string)).toEqual({ b: 1 });
+    });
+});
