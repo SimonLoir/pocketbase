@@ -1182,3 +1182,37 @@ describe("CommonHelpers.splitNonEmpty", () => {
         expect(CommonHelpers.splitNonEmpty("test, test2")).toEqual(["test", "test2"]);
     });
 });
+
+describe("CommonHelpers.sortCollections", () => {
+    it("should return an empty array if the collections are an empty array", () => {
+        expect(CommonHelpers.sortCollections([])).toEqual([]);
+    });
+
+    it("should return the same array if there is only one item", () => {
+        expect(CommonHelpers.sortCollections([{ name: "test" }])).toEqual([{ name: "test" }]);
+    });
+
+    it("should put the auth collections first", () => {
+        expect(CommonHelpers.sortCollections([{ type: "test" }, { type: "auth" }])).toEqual([
+            { type: "auth" },
+            { type: "test" },
+        ]);
+    });
+
+    it("should put the base collections first if there is no auth collection", () => {
+        expect(CommonHelpers.sortCollections([{ type: "test" }, { type: "base" }])).toEqual([
+            { type: "base" },
+            { type: "test" },
+        ]);
+    });
+
+    it("should put the auth collections first then the base collections and then the other collections", () => {
+        expect(CommonHelpers.sortCollections([{ type: "test" }, { type: "base" }, { type: "auth" }])).toEqual(
+            [{ type: "auth" }, { type: "base" }, { type: "test" }]
+        );
+    });
+
+    it("should return an empty array if the collections are undefined", () => {
+        expect(CommonHelpers.sortCollections(undefined as any)).toEqual([]);
+    });
+});
