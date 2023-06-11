@@ -1429,4 +1429,9 @@ describe.only("CommonHelpers.trimQuotedValue", () => {
     it("should only remove the quotes if they match", () => {
         expect('`test"').toBe('`test"');
     });
+
+    it("should not remove the quotes in an array of strings", () => {
+        const a = ["'", "test", "'"];
+        expect(CommonHelpers.trimQuotedValue(a)).toEqual(a);
+    });
 });
