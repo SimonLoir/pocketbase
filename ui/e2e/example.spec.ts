@@ -28,3 +28,20 @@ test("logout", async ({ page }) => {
     await page.waitForURL(/.*\#\/login/g);
     expect(page).toHaveURL(/.*\#\/login/g);
 });
+
+test("login with wrong password", async ({ page }) => {
+    await page.goto("/_/");
+
+    expect(page).toHaveURL(/.*\#\/login/g);
+
+    await page.getByLabel("Email").click();
+    await page.getByLabel("Email").fill("test@example.com");
+
+    await page.getByLabel("Password").fill("wrongpassword");
+    await page.getByRole("button", { name: "Login " }).click();
+
+    await page.waitForSelector(".alert");
+    const alert = await page.$(".alert");
+    expect(alert).not.toBeNull();
+    expect(await alert?.innerText()).toContain("Invalid login credentials.");
+});
