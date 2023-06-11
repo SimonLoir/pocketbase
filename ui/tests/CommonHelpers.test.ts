@@ -1400,3 +1400,33 @@ describe("CommonHelpers.truncateObject", () => {
         expect(CommonHelpers.truncateObject(obj)).toEqual(obj);
     });
 });
+
+describe.only("CommonHelpers.trimQuotedValue", () => {
+    it("should return a number if the value is a number", () => {
+        expect(CommonHelpers.trimQuotedValue(1)).toBe(1);
+    });
+
+    it("should return the string if the string does not start and end with a quote", () => {
+        expect(CommonHelpers.trimQuotedValue("test")).toBe("test");
+    });
+
+    it("should not remove the quotes if the string starts with a quote but does not end with a quote", () => {
+        expect(CommonHelpers.trimQuotedValue('"test')).toBe('"test');
+    });
+
+    it("should remove the quotes if the string starts and ends with a quote", () => {
+        expect(CommonHelpers.trimQuotedValue('"test"')).toBe("test");
+    });
+
+    it("should remove the quotes if the string starts and ends with a single quote", () => {
+        expect(CommonHelpers.trimQuotedValue("'test'")).toBe("test");
+    });
+
+    it("should remove the quotes if the string starts and ends with a backtick", () => {
+        expect(CommonHelpers.trimQuotedValue("`test`")).toBe("test");
+    });
+
+    it("should only remove the quotes if they match", () => {
+        expect('`test"').toBe('`test"');
+    });
+});
